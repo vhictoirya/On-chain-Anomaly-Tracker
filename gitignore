@@ -1,3 +1,4 @@
+.env
 *.env
-anomaly/
 Uniswap_V3/
+anomaly/
