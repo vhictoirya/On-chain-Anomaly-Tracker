@@ -48,7 +48,7 @@ async def lifespan(app: FastAPI):
         from blockchain_anomaly_tracker import BlockchainAnomalyTracker
         from threat_risk_detector import fetch_risk_data, build_engine_from_webacy
 
-        services["anomaly_tracker"] = BlockchainAnomalyTracker(ETHERSCAN_API_KEY, GECKO_API)
+        services["anomaly_tracker"] = BlockchainAnomalyTracker(ETHERSCAN_API_KEY, INFURA_URL, GECKO_API)
         services["fetch_risk_data"] = fetch_risk_data
         services["build_engine_from_webacy"] = build_engine_from_webacy
 
@@ -105,7 +105,7 @@ class AddressRequest(BaseModel):
         min_length=42,
         max_length=42,
         description="Ethereum address (0x...)",
-        examples=["0x742d35Cc6634C0532925a3b844Bc454e4438f44e"],
+        examples=["0xdAC17F958D2ee523a2206206994597C13D831ec7"],
     )
 
     @field_validator("address")

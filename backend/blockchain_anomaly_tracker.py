@@ -341,11 +341,11 @@ class InputDecoder:
         except Exception:
             return {"method": method_name, "params": {}}
 class BlockchainAnomalyTracker:
-    def __init__(self, api_key: str,  coin_key: str):
+    def __init__(self, api_key: str, infura_url: str, coin_key: str):
         # API handles transactions + token info
         self.api = EtherscanAPI(api_key, coin_key) 
         # Decoder handles method signatures
-        self.decoder = InputDecoder(api_key, infura_url) # only etherscan key usually needed
+        self.decoder = InputDecoder(api_key, infura_url)
   
     # Preprocessing
     def preprocess_data(self, data: List[Dict], is_single_tx: bool = False) -> pd.DataFrame:

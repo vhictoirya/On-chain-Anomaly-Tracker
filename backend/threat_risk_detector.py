@@ -244,23 +244,23 @@ def build_engine_from_webacy(response: Dict[str, Any]) -> Tuple[RiskEngine, Dict
         ),
         "liquidity": LiquidityRisk(
             "unlocked-liquidity" in issues_keys,
-            float(details.get("lockedLiquidityPercent") or 10),
-            float(details.get("creator_percent") or 30)
+            float(details.get("lockedLiquidityPercent") or 0),
+            float(details.get("creator_percent") or 0)
         ),
         "holder": HolderRisk(
-            float(ownership.get("percentageHeldByTop10") or 45)
+            float(ownership.get("percentageHeldByTop10") or 0)
         ),
         "token_security": TokenSecurityRisk(
-            float(token_risk.get("buy_tax_percentage") or 12),
+            float(token_risk.get("buy_tax_percentage") or 0),
             "transfer_pausable" in issues_keys,
             "is_blacklisted" in issues_keys,
             bool(token_risk.get("is_trusted"))
         ),
         "market": MarketRisk(
-            float(market.get("price_change_percentage_7d") or 70),
-            float(market.get("ath_change_percentage") or -60),
-            float(market.get("atl_change_percentage") or 40),
-            int(market.get("market_cap_rank") or 500)
+            float(market.get("price_change_percentage_7d") or 0),
+            float(market.get("ath_change_percentage") or 0),
+            float(market.get("atl_change_percentage") or 0),
+            int(market.get("market_cap_rank") or 9999)
         ),
         "fraud": FraudRisk(
             "hacker" in issues_keys,
@@ -340,6 +340,7 @@ def print_report(address: str, response: dict, engine: RiskEngine, modules: Dict
     print("=" * 70)
 
 
+
 # ======================
 # Real-Time Fetcher
 # ======================
@@ -355,7 +356,7 @@ def fetch_risk_data(address: str, api_key: str) -> dict:
     }
     
     try:
-        resp = requests.get(api_url, headers=headers, timeout=30)
+        resp = requests.get(api_url, headers=headers, timeout=(5, 10))
         
         if resp.status_code == 200:
             return resp.json()
@@ -383,3 +384,19 @@ def monitor_address(address: str, api_key: str, interval: int = 60):
         print("\n\nRunning real-time risk check...")
         run_realtime_assessment(address, api_key)
         time.sleep(interval)
+# ======================
+# Example Run
+# ======================
+if __name__ == "__main__":
+    # Get API key from environment variable
+    API_KEY = os.getenv("WEBACY_API_KEY")
+    
+    if not API_KEY:
+        print("Please set the WEBACY_API_KEY environment variable")
+
+    
+    address = "0xdAC17F958D2ee523a2206206994597C13D831ec7" 
+    run_realtime_assessment(address, API_KEY)
+
+    # Or keep monitoring:
+    # monitor_address(test_address, API_KEY, interval=300)  # every 5 minutes
