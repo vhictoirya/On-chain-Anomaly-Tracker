@@ -107,14 +107,15 @@ class AddressRequest(BaseModel):
         description="Ethereum address (0x...)",
         examples=["0xdAC17F958D2ee523a2206206994597C13D831ec7"],
     )
-
+    
     @field_validator("address")
     def validate_address(cls, v: str) -> str:
         if not v.startswith("0x"):
             raise ValueError("Address must start with 0x")
         if not all(c in "0123456789abcdefABCDEF" for c in v[2:]):
             raise ValueError("Address contains invalid characters")
-        return v.lower()
+        return v   # keep original checksum case
+
 
 # --------------------------------------------------
 # Response Models
@@ -165,31 +166,16 @@ def detailed_health_check():
     }
 
 
-@app.post(
-    "/analyze/transaction",
+@app.get(
+    "/analyze/transaction/{tx_hash}",
     tags=["Transaction Analysis"],
     status_code=status.HTTP_200_OK
 )
-def analyze_transaction(
-    req: TxRequest | None = None,
-    raw_tx_hash: str | None = Body(None),
-    format: str = "json"
-):
+def analyze_transaction(tx_hash: str, format: str = Query("json", enum=["json", "text"])):
     if "anomaly_tracker" not in services:
         raise HTTPException(status_code=503, detail="Anomaly tracker not initialized")
 
     try:
-        # Normalize input
-        tx_hash = None
-        if req:
-            tx_hash = req.tx_hash
-        elif raw_tx_hash:
-            tx_hash = raw_tx_hash.strip().lower()
-            if not tx_hash.startswith("0x") or len(tx_hash) != 66:
-                raise HTTPException(status_code=400, detail="Invalid transaction hash format")
-        else:
-            raise HTTPException(status_code=400, detail="No transaction hash provided")
-
         logger.info(f"Analyzing transaction: {tx_hash}")
         result = services["anomaly_tracker"].analyze_single_transaction(tx_hash)
 
@@ -236,57 +222,62 @@ def analyze_transaction(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post(
-    "/analyze/address",
+@app.get(
+    "/analyze/address/{address}",
     tags=["Address Analysis"],
-    status_code=status.HTTP_200_OK,
+    response_model=AddressAnalysisResponse,
+    status_code=status.HTTP_200_OK
 )
-def analyze_address(req: AddressRequest, format: str = Query("json", enum=["json", "text"])):
+def analyze_address(address: str, format: str = Query("json", enum=["json", "text"])):
     if "fetch_risk_data" not in services or "build_engine_from_webacy" not in services:
         raise HTTPException(status_code=503, detail="Risk detector not initialized")
 
     try:
-        logger.info(f"Analyzing address: {req.address}")
-        raw_data = services["fetch_risk_data"](req.address, WEBACY_API_KEY)
+        logger.info(f"Analyzing address: {address}")
+        webacy_response = services["fetch_risk_data"](address, WEBACY_API_KEY)
+        if not webacy_response:
+            raise HTTPException(status_code=404, detail="No data available for this address")
 
-        if not raw_data:
-            raise HTTPException(status_code=404, detail="No risk data found")
+        engine, modules = services["build_engine_from_webacy"](webacy_response)
 
-        engine, modules = services["build_engine_from_webacy"](raw_data)
-        score, label = engine.overall_risk()
+        if format == "text":
+            # Pretty CLI-style text report
+            lines = []
+            lines.append("=" * 70)
+            lines.append(f"Risk Assessment Report for {address}")
+            lines.append("-" * 70)
+            overall_score = engine.overall_score()
+            overall_label = engine.label(overall_score)
+            lines.append(f"Overall Risk: {overall_score:.2f} → {overall_label}")
+            lines.append("=" * 70)
 
-        if format == "json":
-            return {
-                "address": req.address,
-                "overall_score": score,
-                "overall_risk": label,
-                "module_scores": {
-                    name: {
-                        "score": m.score(),
-                        "label": engine.label(m.score()),
-                        "explain": m.explain(),
-                    }
-                    for name, m in modules.items()
-                },
-            }
+            for name, module in modules.items():
+                score = module.score()
+                label = engine.label(score)
+                lines.append(f"- {name:<15} | score: {score:6.2f} | label: {label}")
+                lines.append(f"    ↳ {module.explain()}")
 
-        # If format=text → return as plain text report
-        report = ["=" * 70]
-        report.append(f"Risk Assessment Report for {req.address}")
-        report.append("-" * 70)
-        for name, m in modules.items():
-            report.append(f"- {name:15} | score: {m.score():6.2f} | label: {engine.label(m.score())}")
-            report.append(f"    ↳ {m.explain()}")
-        report.append("=" * 70)
-        report.append(f"Overall Risk: {score:.2f} → {label}")
-        report.append("=" * 70)
+            return PlainTextResponse("\n".join(lines))
 
-        return PlainTextResponse("\n".join(report))
+        # JSON response (default)
+        return {
+            "address": address,
+            "overall_score": engine.overall_score(),
+            "overall_risk": engine.label(engine.overall_score()),
+            "module_scores": {
+                name: {
+                    "score": module.score(),
+                    "label": engine.label(module.score()),
+                    "explain": module.explain(),
+                }
+                for name, module in modules.items()
+            },
+        }
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        logger.error(f"Unexpected error during address analysis: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # --------------------------------------------------

@@ -345,23 +345,18 @@ def print_report(address: str, response: dict, engine: RiskEngine, modules: Dict
 # Real-Time Fetcher
 # ======================
 def fetch_risk_data(address: str, api_key: str) -> dict:
-    """
-    Fetches live threat/risk data for an address.
-    Replace the URL & headers with your actual Webacy (or other) API.
-    """
     api_url = f"https://api.webacy.com/addresses/{address}"
     headers = {
         "accept": "application/json",
         "x-api-key": api_key
     }
-    
+
     try:
         resp = requests.get(api_url, headers=headers, timeout=(5, 10))
-        
+        print("DEBUG:", resp.status_code, resp.text)  # 👈 add this
         if resp.status_code == 200:
             return resp.json()
         else:
-            print(f"API Error {resp.status_code}: {resp.text}")
             return {}
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")
