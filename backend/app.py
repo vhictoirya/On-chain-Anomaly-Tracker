@@ -70,6 +70,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+origins = [
+    "http://localhost:3000",  # Next.js dev server
+    "https://your-production-domain.com"  # Optional for prod
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # adjust for production
