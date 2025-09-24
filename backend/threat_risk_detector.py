@@ -352,8 +352,10 @@ def fetch_risk_data(address: str, api_key: str) -> dict:
     }
 
     try:
-        resp = requests.get(api_url, headers=headers, timeout=(5, 10))
-        print("DEBUG:", resp.status_code, resp.text)  # 👈 add this
+        resp = requests.get(api_url, headers=headers, timeout=30)
+        # 👇 add this
+        print(f"DEBUG Webacy API → {resp.status_code} {resp.text}")
+        
         if resp.status_code == 200:
             return resp.json()
         else:
@@ -361,7 +363,6 @@ def fetch_risk_data(address: str, api_key: str) -> dict:
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")
         return {}
-
 
 def run_realtime_assessment(address: str, api_key: str):
     webacy_response = fetch_risk_data(address, api_key)
