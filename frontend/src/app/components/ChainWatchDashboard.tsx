@@ -3,36 +3,37 @@
 import React, { useState } from 'react';
 
 // Type Guards
-const isTransactionAnomaly = (results: any): results is TransactionAnomalyResults => {
-  return 'wash_trading' in results && 'price_manipulation' in results && 'pump_and_dump' in results;
+// Used to determine the type of results from API responses
+const isTransactionAnomaly = (results: unknown): results is TransactionAnomalyResults => {
+  return typeof results === 'object' && results !== null && 'wash_trading' in results && 'price_manipulation' in results && 'pump_and_dump' in results;
 };
 
-const isSandwichAttack = (results: any): results is SandwichAttackResponse => {
-  return 'attacks_detected' in results && 'unique_blocks' in results;
+const isSandwichAttack = (results: unknown): results is SandwichAttackResponse => {
+  return typeof results === 'object' && results !== null && 'attacks_detected' in results && 'unique_blocks' in results;
 };
 
-const isInsiderTrade = (results: any): results is InsiderTradeResponse => {
-  return 'suspicious_trades' in results;
+const isInsiderTrade = (results: unknown): results is InsiderTradeResponse => {
+  return typeof results === 'object' && results !== null && 'suspicious_trades' in results;
 };
 
-const isSnipingBot = (results: any): results is SnipingBotResponse => {
-  return 'bot_confidence_score' in results;
+const isSnipingBot = (results: unknown): results is SnipingBotResponse => {
+  return typeof results === 'object' && results !== null && 'bot_confidence_score' in results;
 };
 
-const isLiquidityManipulation = (results: any): results is LiquidityManipulationResponse => {
-  return 'manipulations_detected' in results && 'manipulations' in results;
+const isLiquidityManipulation = (results: unknown): results is LiquidityManipulationResponse => {
+  return typeof results === 'object' && results !== null && 'manipulations_detected' in results && 'manipulations' in results;
 };
 
-const isConcentratedAttack = (results: any): results is ConcentratedAttackResponse => {
-  return 'attacks_detected' in results && 'attacks' in results;
+const isConcentratedAttack = (results: unknown): results is ConcentratedAttackResponse => {
+  return typeof results === 'object' && results !== null && 'attacks_detected' in results && 'attacks' in results;
 };
 
-const isPoolDomination = (results: any): results is PoolDominationResponse => {
-  return 'dominant_entities' in results && 'dominations' in results;
+const isPoolDomination = (results: unknown): results is PoolDominationResponse => {
+  return typeof results === 'object' && results !== null && 'dominant_entities' in results && 'dominations' in results;
 };
 
-const isThreatAssessment = (results: any): results is ThreatAssessmentResponse => {
-  return 'overall_risk_score' in results && 'risk_modules' in results;
+const isThreatAssessment = (results: unknown): results is ThreatAssessmentResponse => {
+  return typeof results === 'object' && results !== null && 'overall_risk_score' in results && 'risk_modules' in results;
 };
 
 // Response Types
@@ -62,7 +63,7 @@ interface TransactionAnomalyResults {
   };
   pump_and_dump: {
     num_schemes: number;
-    high_confidence: any[];
+    high_confidence: Array<{ wallet: string; confidence: number }>;
   };
 }
 
@@ -180,7 +181,7 @@ interface PoolDominationResponse extends BaseResponse {
 }
 
 
-interface ThreatAssessmentResponse {
+interface ThreatAssessmentResponse extends BaseResponse {
   address: string;
   token_name: string;
   token_symbol: string;
@@ -199,7 +200,6 @@ interface ThreatAssessmentResponse {
     module: string;
     score: number;
   }>;
-  message: string;
 }
 import { Shield, AlertTriangle, Activity, Layers, Search, TrendingUp, Users, Droplet, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import AlertBanner from './AlertBanner';
@@ -375,11 +375,11 @@ const ChainWatchDashboard = () => {
 
   const getRiskColor = (level: string): string => {
     const colors: { [key: string]: string } = {
-      'MINIMAL': 'text-green-600 bg-green-50',
-      'LOW': 'text-blue-600 bg-blue-50',
-      'MEDIUM': 'text-yellow-600 bg-yellow-50',
-      'HIGH': 'text-orange-600 bg-orange-50',
-      'CRITICAL': 'text-red-600 bg-red-50'
+      MINIMAL: 'text-green-600 bg-green-50',
+      LOW: 'text-blue-600 bg-blue-50',
+      MEDIUM: 'text-yellow-600 bg-yellow-50',
+      HIGH: 'text-orange-600 bg-orange-50',
+      CRITICAL: 'text-red-600 bg-red-50'
     };
     return colors[level] || 'text-gray-600 bg-gray-50';
   };
@@ -576,17 +576,17 @@ const ChainWatchDashboard = () => {
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                     <div className="bg-white/5 rounded-lg p-4">
                       <p className="text-sm text-gray-400 mb-1">Risk Score</p>
-                      <p className="text-3xl font-bold">{(results as any).risk_score.toFixed(1)}/100</p>
+                      <p className="text-3xl font-bold">{(results as TransactionAnomalyResults).risk_score.toFixed(1)}/100</p>
                     </div>
                     <div className="bg-white/5 rounded-lg p-4">
                       <p className="text-sm text-gray-400 mb-1">Risk Level</p>
                       <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${getRiskColor((results as any).risk_level)}`}>
-                        {(results as any).risk_level}
+                        {(results as TransactionAnomalyResults).risk_level}
                       </span>
                     </div>
                     <div className="bg-white/5 rounded-lg p-4">
                       <p className="text-sm text-gray-400 mb-1">Total Transactions</p>
-                      <p className="text-3xl font-bold">{(results as any).total_transactions}</p>
+                      <p className="text-3xl font-bold">{(results as TransactionAnomalyResults).total_transactions}</p>
                     </div>
                     <div className="bg-white/5 rounded-lg p-4">
                       <p className="text-sm text-gray-400 mb-1">Chain</p>
