@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/app.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "backend/app.py"
+    }
+  ],
+  "env": {
+    "PYTHON_VERSION": "3.11",
+    "ETHERSCAN_API_KEY": "@etherscan_api_key",
+    "WEBACY_API_KEY": "@webacy_api_key",
+    "GECKO_API": "@gecko_api",
+    "INFURA_URL": "@infura_url",
+    "MORALIS_KEY": "@moralis_key"
+  }
+}
