@@ -113,7 +113,11 @@ async def global_exception_handler(request: Request, exc: Exception):
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://frontend-1ts52gaqe-vhictoiryas-projects.vercel.app",
+        "http://localhost:3000",
+        "http://localhost:3003"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -888,13 +892,13 @@ async def assess_token_threat(
 if __name__ == "__main__":
     import uvicorn
     print("\n🚀 Starting ChainWatch Anomaly Detection API...")
-    print(f"📡 Server will be available at: http://0.0.0.0:8000")
-    print(f"📚 API Documentation: http://0.0.0.0:8000/docs")
-    print(f"📖 ReDoc Documentation: http://0.0.0.0:8000/redoc\n")
+    print(f"📡 Server will be available at: http://0.0.0.0:8001")
+    print(f"📚 API Documentation: http://0.0.0.0:8001/docs")
+    print(f"📖 ReDoc Documentation: http://0.0.0.0:8001/redoc\n")
     
     uvicorn.run(
         app,  # Pass the app object directly instead of string
         host="0.0.0.0",
-        port=8000,
+        port=8001,
         reload=False  # Set to False when running directly
     )
