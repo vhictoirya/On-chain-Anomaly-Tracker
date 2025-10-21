@@ -116,7 +116,8 @@ app.add_middleware(
     allow_origins=[
         "https://frontend-silk-chi-86.vercel.app",
         "http://localhost:3000",
-        "http://localhost:3003"
+        "http://localhost:3003",
+        "https://chainwatch-6ggd7vuu0-vhictoiryas-projects.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],

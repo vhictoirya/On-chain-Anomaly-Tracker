@@ -243,7 +243,7 @@ const ChainWatchDashboard = () => {
   const [chain, setChain] = useState('eth');
   const [sensitivity, setSensitivity] = useState('medium');
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000/api/v1';
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'https://chainwatch-6ggd7vuu0-vhictoiryas-projects.vercel.app/api/v1';
 
   // Fix URL encoding for special characters
   const encodeParams = (params: Record<string, string | number>) => {
