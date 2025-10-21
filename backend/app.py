@@ -292,7 +292,18 @@ async def root():
 # Health check
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"}
+    try:
+        # Verify the app is fully initialized
+        if not (MORALIS_API_KEY or WEBACY_API_KEY):
+            return {"status": "starting", "message": "API keys not yet loaded"}
+            
+        # Additional checks can be added here
+        return {"status": "healthy", "api_keys": {
+            "moralis": "configured" if MORALIS_API_KEY else "missing",
+            "webacy": "configured" if WEBACY_API_KEY else "missing"
+        }}
+    except Exception as e:
+        return {"status": "unhealthy", "error": str(e)}
 
 
 # Test endpoint to verify module imports
