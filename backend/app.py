@@ -114,7 +114,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://frontend-1ts52gaqe-vhictoiryas-projects.vercel.app",
+        "https://frontend-silk-chi-86.vercel.app",
         "http://localhost:3000",
         "http://localhost:3003"
     ],
