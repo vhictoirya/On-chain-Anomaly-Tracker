@@ -1,8 +1,9 @@
 [build]
-builder = "nixpacks"
+builder = "dockerfile"
+buildCommand = "docker build -t app ."
 
 [deploy]
-startCommand = "cd backend && python -m uvicorn app:app --host 0.0.0.0 --port $PORT --timeout-keep-alive 75 --workers 1"
+startCommand = "docker run -p ${PORT}:${PORT} -e PORT=${PORT} app"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"

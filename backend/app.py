@@ -293,17 +293,31 @@ async def root():
 @app.get("/health")
 async def health_check():
     try:
-        # Verify the app is fully initialized
-        if not (MORALIS_API_KEY or WEBACY_API_KEY):
-            return {"status": "starting", "message": "API keys not yet loaded"}
-            
-        # Additional checks can be added here
-        return {"status": "healthy", "api_keys": {
-            "moralis": "configured" if MORALIS_API_KEY else "missing",
-            "webacy": "configured" if WEBACY_API_KEY else "missing"
-        }}
+        status = {
+            "status": "starting",
+            "timestamp": datetime.now().isoformat(),
+            "api_keys": {
+                "moralis": "configured" if MORALIS_API_KEY else "missing",
+                "webacy": "configured" if WEBACY_API_KEY else "missing",
+                "etherscan": "configured" if os.getenv('ETHERSCAN_API_KEY') else "missing",
+                "gecko": "configured" if os.getenv('GECKO_API') else "missing"
+            },
+            "environment": {
+                "python_version": sys.version,
+                "port": os.getenv('PORT', '8001'),
+                "worker_count": 1
+            }
+        }
+        
+        # Check if all required API keys are present
+        required_keys = [MORALIS_API_KEY, WEBACY_API_KEY]
+        if all(required_keys):
+            status["status"] = "healthy"
+        
+        return status
     except Exception as e:
-        return {"status": "unhealthy", "error": str(e)}
+        logger.error(f"Health check failed: {str(e)}")
+        return {"status": "unhealthy", "error": str(e), "timestamp": datetime.now().isoformat()}
 
 
 # Test endpoint to verify module imports
