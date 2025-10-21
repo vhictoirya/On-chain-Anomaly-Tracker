@@ -292,14 +292,7 @@ async def root():
 # Health check
 @app.get("/health")
 async def health_check():
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "services": {
-            "moralis_api": "configured" if MORALIS_API_KEY else "missing",
-            "webacy_api": "configured" if WEBACY_API_KEY else "missing"
-        }
-    }
+    return {"status": "healthy"}
 
 
 # Test endpoint to verify module imports
