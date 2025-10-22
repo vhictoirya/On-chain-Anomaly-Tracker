@@ -49,6 +49,11 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Add file handler for persistent logging
+file_handler = logging.FileHandler('api.log')
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(file_handler)
+
 # Initialize FastAPI app
 app = FastAPI(
     title="ChainWatch Anomaly Detection APP",
@@ -101,23 +106,33 @@ def convert_numpy_types(obj):
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Global exception handler caught: {exc}", exc_info=True)
+    logger.error(f"Request details: Method={request.method}, URL={request.url}, Headers={dict(request.headers)}")
+    
+    error_detail = str(exc)
+    error_type = type(exc).__name__
+    
+    logger.error(f"Error type: {error_type}, Detail: {error_detail}")
+    
     return JSONResponse(
         status_code=500,
         content={
             "error": "Internal Server Error",
-            "detail": str(exc),
-            "type": type(exc).__name__
+            "detail": error_detail,
+            "type": error_type,
+            "request_url": str(request.url),
+            "method": request.method
         }
     )
 
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins in development
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Accept", "Origin"],
 )
+logger.info("CORS middleware configured with allow_origins=['*']")
 
 # Configuration
 MORALIS_API_KEY = os.getenv("MORALIS_KEY")

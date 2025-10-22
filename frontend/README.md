@@ -1,308 +1,152 @@
-# Blockchain Threat & Anomaly Detection System
+# 🔍 On-chain Anomaly Tracker
 
-A comprehensive blockchain security platform that analyzes Ethereum transactions and addresses for potential risks, anomalies, and threats using advanced detection algorithms and multiple data sources.
+A comprehensive blockchain analytics platform for detecting and monitoring various on-chain anomalies and suspicious activities in real-time.
 
-## 🌟 Features
+## 🎯 Project Overview
 
-- **Transaction Analysis**: Deep inspection of Ethereum transactions for suspicious patterns
-- **Address Risk Assessment**: Multi-module risk scoring system for wallet addresses
-- **Real-time Data**: Integration with Etherscan, CoinGecko, and Webacy APIs
-- **Flexible Output**: JSON and human-readable text format responses
-- **RESTful API**: Clean, documented endpoints for easy integration
-- **Modern Frontend**: React-based user interface for interactive analysis
+The On-chain Anomaly Tracker is a full-stack application designed to provide real-time monitoring and analysis of blockchain activities, focusing on detecting various types of anomalies and potential threats. The system combines multiple detection modules to provide a comprehensive view of blockchain security risks.
 
-## 🏗️ Architecture
+## ✨ Features
 
-The system consists of two main components:
+- 🔎 **Transaction Anomaly Detection**
+  - 🔄 Wash Trading Detection
+  - 📊 Price Manipulation Analysis
+  - 📈 Pump & Dump Scheme Detection
+  - ⚡ Risk Scoring System
 
-### Backend (FastAPI)
-- **API Server**: FastAPI-based REST API
-- **Anomaly Detection**: Advanced blockchain transaction analysis
-- **Risk Assessment**: Multi-factor address risk evaluation
-- **Data Integration**: Multiple blockchain data providers
+- 🛡️ **Advanced Attack Detection**
+  - 🥪 Sandwich Attack Analysis
+  - 🎯 Insider Trading Detection
+  - 🤖 Sniping Bot Identification
+  - 💧 Liquidity Manipulation Monitoring
 
-### Frontend (React)
-- **User Interface**: Modern React application
-- **Interactive Analysis**: Real-time transaction and address lookup
-- **Deployment Ready**: Configured for Vercel deployment
+- 🌊 **Pool Analysis**
+  - 🎯 Concentrated Attack Detection
+  - 👑 Pool Domination Analysis
+  - 💧 Liquidity Pool Monitoring
 
-## 🚀 Quick Start
+- 🚨 **Threat Assessment**
+  - 📊 Overall Risk Scoring
+  - 🔄 Multi-module Risk Analysis
+  - ⚡ Real-time Alert System
 
-### Prerequisites
+## 🏗️ Technical Architecture
 
-- Python 3.8+
-- Node.js 16+
-- API Keys for:
-  - Etherscan API
-  - CoinGecko API
-  - Infura
-  - Webacy API
+### 🎨 Frontend (Next.js 15.5.6)
+- ⚛️ Modern React with TypeScript
+- 🎯 Tailwind CSS for styling
+- ⚡ Real-time alerts and notifications
+- 📊 Interactive dashboard components
+- 📱 Responsive design for all devices
 
-### Backend Setup
+### 🔧 Backend (Python)
+- 🚀 FastAPI for API endpoints
+- 🔗 Moralis integration for blockchain data
+- 🧠 Advanced analytics modules
+- ⚡ Real-time data processing
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd blockchain-anomaly-tracker
-   ```
+### ☁️ Infrastructure
+- 🚀 Frontend deployed on Vercel
+- 🌐 API hosted with scalable backend
+- ⚙️ Environment-based configuration
+- 🔒 Secure API key management
 
-2. **Install Python dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+## 📅 Development Timeline
 
-3. **Environment Configuration**
-   Create a `.env` file in the root directory:
-   ```env
-   ETHERSCAN_API_KEY=your_etherscan_api_key
-   GECKO_API=your_coingecko_api_key
-   INFURA_URL=https://mainnet.infura.io/v3/your_project_id
-   WEBACY_API_KEY=your_webacy_api_key
-   ```
+### 🔧 Backend Development (October 2025)
+1. 🏗️ Set up Python virtual environment
+2. 🧠 Implemented core analytics modules:
+   - 🔍 Transaction anomaly detection
+   - 🥪 Sandwich attack analysis
+   - 🎯 Insider trading detection
+   - 🤖 Sniping bot detection
+   - 💧 Liquidity manipulation analysis
+3. 🔗 Integrated Moralis API for blockchain data
+4. ⚡ Implemented data processing pipelines
 
-4. **Run the API server**
-   ```bash
-   python main.py
-   # or
-   uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-   ```
+### 🎨 Frontend Development (October 2025)
+1. ⚛️ Created Next.js project with TypeScript
+2. 🏗️ Developed core components:
+   - 📊 ChainWatchDashboard
+   - 🚨 AlertBanner
+   - 📈 Analysis modules
+3. ⚡ Implemented real-time alerts
+4. 📱 Added responsive design
+5. 🔗 Integrated with backend API
 
-   The API will be available at `http://localhost:8000`
+### 🚀 Deployment (October 18, 2025)
+1. Configured Vercel deployment
+2. Set up environment variables
+3. Implemented ESLint configurations
+4. Successfully deployed to production
 
-### Frontend Setup
+## 🚀 Production Deployment
 
-1. **Navigate to frontend directory**
-   ```bash
-   cd frontend  # or wherever your React app is located
-   ```
+The application is successfully deployed and accessible at:
+- 🌐 Frontend: [https://frontend-1ts52gaqe-vhictoiryas-projects.vercel.app](https://frontend-1ts52gaqe-vhictoiryas-projects.vercel.app)
+- 🔧 Backend API: Hosted on dedicated server
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+### ⚙️ Production Configuration
+- 🌎 Single-region deployment on Vercel (iad1 - Washington, D.C., USA)
+- 🔍 ESLint configured for production builds
+- 📝 TypeScript strict mode enabled
+- 🔒 Environment variables properly configured
 
-3. **Start development server**
-   ```bash
-   npm start
-   ```
+## 🎯 Getting Started
 
-   The frontend will be available at `http://localhost:3000`
+### 📋 Prerequisites
+- 📦 Node.js 18+
+- 🐍 Python 3.13+
+- 🔑 Moralis API Key
 
-## 📚 API Documentation
+### 🔧 Installation
 
-### Base URL
-```
-http://localhost:8000
-```
-
-### Health Check
-```http
-GET /health
-```
-
-Returns system status and service availability.
-
-### Transaction Analysis
-```http
-GET /analyze/transaction/{tx_hash}?format=json|text
-```
-
-**Parameters:**
-- `tx_hash`: Ethereum transaction hash (66 characters, starts with 0x)
-- `format`: Response format (`json` or `text`)
-
-**Example:**
+1. 📥 Clone the repository:
 ```bash
-curl "http://localhost:8000/analyze/transaction/0x7154a8533d2b58da3d7a1caf788ffb8317129149aac9832ea2089bb716ac7a8f"
+git clone https://github.com/vhictoirya/On-chain-Anomaly-Tracker.git
+cd On-chain-Anomaly-Tracker
 ```
 
-**Response:**
-```json
-{
-  "analysis_type": "transaction",
-  "tx_hash": "0x7154a8533d2b58da3d7a1caf788ffb8317129149aac9832ea2089bb716ac7a8f",
-  "transaction_details": {
-    "from": "0x...",
-    "to": "0x...",
-    "value": "1000000000000000000",
-    "method": "transfer",
-    "tx_type": "ERC20",
-    "gas_fee_eth": "0.002"
-  },
-  "risk_flags": {
-    "high_value": true,
-    "suspicious_pattern": false,
-    "known_address": true
-  },
-  "verdict": "Medium risk transaction detected"
-}
-```
-
-### Address Risk Analysis
-```http
-GET /analyze/address/{address}?format=json|text
-```
-
-**Parameters:**
-- `address`: Ethereum address (42 characters, starts with 0x)
-- `format`: Response format (`json` or `text`)
-
-**Example:**
+2. 🔧 Set up the backend:
 ```bash
-curl "http://localhost:8000/analyze/address/0xdAC17F958D2ee523a2206206994597C13D831ec7"
+python -m venv anomaly
+source anomaly/Scripts/activate  # On Windows use: .\anomaly\Scripts\Activate.ps1
+pip install -r requirements.txt
 ```
 
-**Response:**
-```json
-{
-  "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-  "overall_score": 0.25,
-  "overall_risk": "LOW",
-  "module_scores": {
-    "behavioral_analysis": {
-      "score": 0.1,
-      "label": "LOW",
-      "explain": "Normal transaction patterns detected"
-    },
-    "reputation_check": {
-      "score": 0.05,
-      "label": "LOW",
-      "explain": "Address has good reputation"
-    }
-  }
-}
+3. 🎨 Set up the frontend:
+```bash
+cd frontend
+npm install
 ```
 
-## 🔧 Configuration
+4. 🔒 Create environment variables:
+```bash
+# Backend (.env)
+MORALIS_KEY=your_moralis_api_key
 
-### Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `ETHERSCAN_API_KEY` | Etherscan API key for transaction data | Yes |
-| `GECKO_API` | CoinGecko API key for price data | Yes |
-| `INFURA_URL` | Infura endpoint URL | Yes |
-| `WEBACY_API_KEY` | Webacy API key for risk analysis | Yes |
-
-### CORS Configuration
-
-The API is configured to allow requests from:
-- `http://localhost:3000` (development)
-- Your production domain (configure in `main.py`)
-
-## 🚀 Deployment
-
-### Backend Deployment
-
-The FastAPI backend can be deployed to various platforms:
-
-**Using Docker:**
-```dockerfile
-FROM python:3.9-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Frontend (.env.local)
+NEXT_PUBLIC_API_BASE=http://localhost:8000/api/v1
 ```
 
-**Using Railway, Heroku, or similar:**
-- Set environment variables
-- Deploy directly from repository
-
-### Frontend Deployment (Vercel)
-
-The frontend is configured for Vercel deployment with the included `vercel.json`:
-
-1. **Install Vercel CLI**
-   ```bash
-   npm install -g vercel
-   ```
-
-2. **Deploy**
-   ```bash
-   vercel --prod
-   ```
-
-The `vercel.json` configuration handles:
-- Static file serving
-- SPA routing
-- Build optimization
-
-## 🛠️ Development
-
-### Project Structure
-```
-├── main.py                 # FastAPI application
-├── blockchain_anomaly_tracker.py
-├── threat_risk_detector.py
-├── requirements.txt
-├── .env.example
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── vercel.json
-└── README.md
-```
-
-### Adding New Features
-
-1. **Backend**: Add new endpoints in `main.py`
-2. **Analysis Modules**: Extend detection algorithms
-3. **Frontend**: Add new components and pages
-
-### Testing
-
+5. 🚀 Run the application:
 ```bash
 # Backend
-python -m pytest
+python backend/app.py
 
 # Frontend
 cd frontend
-npm test
+npm run dev
 ```
-
-## 📊 Risk Assessment Modules
-
-The system includes multiple risk assessment modules:
-
-- **Behavioral Analysis**: Transaction pattern recognition
-- **Reputation Check**: Known address verification
-- **Volume Analysis**: Unusual transaction volumes
-- **Frequency Analysis**: Transaction timing patterns
-- **Network Analysis**: Address relationship mapping
-
-## 🔐 Security Considerations
-
-- API keys are stored in environment variables
-- Input validation on all endpoints
-- Rate limiting recommended for production
-- CORS configuration for cross-origin requests
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+1. 🔱 Fork the repository
+2. 🌿 Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. 💾 Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. 🚀 Push to the branch (`git push origin feature/AmazingFeature`)
+5. 📝 Open a Pull Request
 
-## 📝 License
+## 📄 License
 
-[Your License Here]
-
-## 🆘 Support
-
-- **API Documentation**: Available at `http://localhost:8000/docs` when running
-- **Issues**: Submit via GitHub issues
-- **Contact**: [Your contact information]
-
-## 🔄 Version History
-
-- **v1.0.0**: Initial release with transaction and address analysis
-- **v0.1.0**: Beta version with basic functionality
-
----
-
-**⚠️ Disclaimer**: This tool is for educational and research purposes. Always verify results with multiple sources before making financial decisions.
+This project is licensed under the MIT License - see the LICENSE file for details.

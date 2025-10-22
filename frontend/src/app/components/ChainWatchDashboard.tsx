@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { checkAPIHealth } from '../utils/api';
 
 // Type Guards
 // Used to determine the type of results from API responses
@@ -205,13 +206,86 @@ import { Shield, AlertTriangle, Activity, Layers, Search, TrendingUp, Users, Dro
 import AlertBanner from './AlertBanner';
 
 // Your complete React component code here
-const ChainWatchDashboard = () => {
+interface Props {}
+
+const ChainWatchDashboard: React.FC<Props> = () => {
+  // State declarations
+  const [activeTab, setActiveTab] = useState('transaction');
   const [alerts, setAlerts] = useState<Array<{
     id: string;
     message: string;
     type: 'critical' | 'warning' | 'info' | 'success';
     timestamp: Date;
   }>>([]);
+  const [apiHealth, setApiHealth] = useState<boolean | null>(null);
+  const [tokenAddress, setTokenAddress] = useState('0x6982508145454ce325ddbe47a25d4ec3d2311933');
+  const [walletAddress, setWalletAddress] = useState('0xcB1C1FdE09f811B294172696404e88E658659905');
+  const [pairAddress, setPairAddress] = useState('0xa43fe16908251ee70ef74718545e4fe6c5ccec9f');
+  const [chain, setChain] = useState('eth');
+  const [sensitivity, setSensitivity] = useState('medium');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [results, setResults] = useState<
+    | SandwichAttackResponse
+    | InsiderTradeResponse
+    | SnipingBotResponse
+    | LiquidityManipulationResponse
+    | ConcentratedAttackResponse
+    | PoolDominationResponse
+    | ThreatAssessmentResponse
+    | TransactionAnomalyResults
+    | null
+  >(null);
+
+  const addAlert = (message: string, type: 'critical' | 'warning' | 'info' | 'success') => {
+    setAlerts(prev => [{
+      id: Math.random().toString(36).substring(7),
+      message,
+      type,
+      timestamp: new Date()
+    }, ...prev]);
+  };
+
+  return (
+  // Form states
+  const [tokenAddress, setTokenAddress] = useState('0x6982508145454ce325ddbe47a25d4ec3d2311933');
+  const [walletAddress, setWalletAddress] = useState('0xcB1C1FdE09f811B294172696404e88E658659905');
+  const [pairAddress, setPairAddress] = useState('0xa43fe16908251ee70ef74718545e4fe6c5ccec9f');
+  const [chain, setChain] = useState('eth');
+  const [sensitivity, setSensitivity] = useState('medium');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [results, setResults] = useState<
+    | SandwichAttackResponse
+    | InsiderTradeResponse
+    | SnipingBotResponse
+    | LiquidityManipulationResponse
+    | ConcentratedAttackResponse
+    | PoolDominationResponse
+    | ThreatAssessmentResponse
+    | TransactionAnomalyResults
+    | null
+  >(null);
+
+  const [alerts, setAlerts] = useState<Array<{
+    id: string;
+    message: string;
+    type: 'critical' | 'warning' | 'info' | 'success';
+    timestamp: Date;
+  }>>([]);
+
+  const [apiHealth, setApiHealth] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    async function checkHealth() {
+      const isHealthy = await checkAPIHealth();
+      setApiHealth(isHealthy);
+      if (!isHealthy) {
+        addAlert('API is not responding. Please try again later.', 'critical');
+      }
+    }
+    checkHealth();
+  }, []);
 
   const addAlert = (message: string, type: 'critical' | 'warning' | 'info' | 'success') => {
     setAlerts(prev => [{
@@ -243,7 +317,7 @@ const ChainWatchDashboard = () => {
   const [chain, setChain] = useState('eth');
   const [sensitivity, setSensitivity] = useState('medium');
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'https://chainwatch-6ggd7vuu0-vhictoiryas-projects.vercel.app/api/v1';
+  const API_BASE = `${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8001'}/api/v1`;
 
   // Fix URL encoding for special characters
   const encodeParams = (params: Record<string, string | number>) => {
@@ -257,47 +331,234 @@ const ChainWatchDashboard = () => {
     setError(null);
     setResults(null);
 
+    let retries = 3;
+    let delay = 1000; // Start with 1s delay
+
+    while (retries > 0) {
+      try {
+        const queryString = encodeParams(params);
+        const url = `${API_BASE}/${endpoint}?${queryString}`;
+        console.log(`Fetching from: ${url}`);
+
+        const response = await fetch(url, {
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`API Error ${response.status}: ${response.statusText}`);
+        }
+
+        const responseData = await response.json();
+        setResults(responseData);
+
+        // Type guard checks for results before using properties
+        const analyzeData = async (endpoint: string, params: Record<string, string | number>) => {
+    setLoading(true);
+    setError(null);
+    setResults(null);
+
+    let retries = 3;
+    let delay = 1000; // Start with 1s delay
+
     try {
-      const queryString = encodeParams(params);
-      const response = await fetch(`${API_BASE}/${endpoint}?${queryString}`);
-      
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      while (retries > 0) {
+        try {
+          const queryString = encodeParams(params);
+          const url = `${API_BASE}/${endpoint}?${queryString}`;
+          console.log(`Fetching from: ${url}`);
+
+          const response = await fetch(url, {
+            headers: {
+              'Accept': 'application/json'
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error(`API Error ${response.status}: ${response.statusText}`);
+          }
+
+          const responseData = await response.json();
+          setResults(responseData);
+
+          // Generate appropriate alerts based on response type
+          if (isTransactionAnomaly(responseData)) {
+      try {
+      try {
+        const queryString = encodeParams(params);
+        const url = `${API_BASE}/${endpoint}?${queryString}`;
+        console.log(`Fetching from: ${url}`);
+
+        const response = await fetch(url, {
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        const data = await response.json();
+        setResults(data);
+        
+        if (!response.ok) {
+          console.error(`API request failed: ${response.status} ${response.statusText}`);
+          console.error('Response headers:', Object.fromEntries(response.headers.entries()));
+          const errorText = await response.text();
+          console.error('Response body:', errorText);
+          throw new Error(`API Error ${response.status}: ${response.statusText}${errorText ? ` - ${errorText}` : ''}`);
+        }
+
+        const responseData = await response.json();
+        setResults(responseData);
+        
+        // Generate alerts based on analysis results
+        if ('risk_score' in responseData && responseData.risk_score >= 80) {
+          addAlert(`Critical Risk Detected - Score: ${responseData.risk_score}/100`, 'critical');
+        } else if ('risk_score' in responseData && responseData.risk_score >= 60) {
+          addAlert(`High Risk Activity - Score: ${responseData.risk_score}/100`, 'warning');
+        }
+
+        if ('attacks_detected' in responseData && responseData.attacks_detected > 0) {
+          addAlert(`${responseData.attacks_detected} potential attacks identified!`, 'critical');
+        }
+
+        if ('manipulations_detected' in responseData && responseData.manipulations_detected > 0) {
+          addAlert(`${responseData.manipulations_detected} manipulation events detected!`, 'warning');
+        }
+
+        if ('wash_trading' in responseData && responseData.wash_trading.detected_count > 0) {
+          addAlert(`${responseData.wash_trading.detected_count} wash trading instances found`, 'warning');
+        }
+
+        if ('suspicious_trades_count' in responseData && responseData.suspicious_trades_count > 0) {
+          addAlert(`${responseData.suspicious_trades_count} suspicious trades detected`, 'warning');
+        }
+
+        if ('overall_risk_score' in responseData && responseData.overall_risk_score >= 75) {
+          addAlert(`High threat level detected - ${responseData.overall_risk_level}`, 'critical');
+        }
+
+        // Add success alert when no issues are found
+        if (!responseData.attacks_detected && !responseData.manipulations_detected && 
+            (!('wash_trading' in responseData) || responseData.wash_trading.detected_count === 0)) {
+          addAlert('No significant threats detected', 'success');
+        }
+
+        return; // Exit retry loop on success
+
+      } catch (err) {
+        console.error(`Attempt ${4 - retries} failed:`, err);
+        retries--;
+
+        if (retries > 0) {
+          console.log(`Retrying in ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          delay *= 2; // Exponential backoff
+          continue;
+        }
+        throw err; // Throw the last error if all retries failed
       }
 
-      const data = await response.json();
-      setResults(data);
-      
-      // Generate alerts based on analysis results
-      if ('risk_score' in data && data.risk_score >= 80) {
-        addAlert(`Critical Risk Detected - Score: ${data.risk_score}/100`, 'critical');
-      } else if ('risk_score' in data && data.risk_score >= 60) {
-        addAlert(`High Risk Activity - Score: ${data.risk_score}/100`, 'warning');
-      }
+      try {
+        const queryString = encodeParams(params);
+        const url = `${API_BASE}/${endpoint}?${queryString}`;
+        console.log(`Fetching from: ${url}`);
 
-      if ('attacks_detected' in data && data.attacks_detected > 0) {
-        addAlert(`${data.attacks_detected} potential attacks identified!`, 'critical');
-      }
+        const response = await fetch(url, {
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`API Error ${response.status}: ${response.statusText}`);
+        }
 
-      if ('manipulations_detected' in data && data.manipulations_detected > 0) {
-        addAlert(`${data.manipulations_detected} manipulation events detected!`, 'warning');
-      }
+        const data = await response.json();
+        setResults(data);
 
-      if ('wash_trading' in data && data.wash_trading.detected_count > 0) {
-        addAlert(`${data.wash_trading.detected_count} wash trading instances found`, 'warning');
-      }
+        // Type guard checks for results before using properties
+        if (isTransactionAnomaly(data)) {
+          if (data.risk_score >= 80) {
+            addAlert(`Critical Risk Detected - Score: ${data.risk_score}/100`, 'critical');
+          } else if (data.risk_score >= 60) {
+            addAlert(`High Risk Activity - Score: ${data.risk_score}/100`, 'warning');
+          }
 
-      if ('suspicious_trades_count' in data && data.suspicious_trades_count > 0) {
-        addAlert(`${data.suspicious_trades_count} suspicious trades detected`, 'warning');
-      }
+          if (data.wash_trading.detected_count > 0) {
+            addAlert(`${data.wash_trading.detected_count} wash trading instances found`, 'warning');
+          }
+        }
 
-      if ('overall_risk_score' in data && data.overall_risk_score >= 75) {
-        addAlert(`High threat level detected - ${data.overall_risk_level}`, 'critical');
+        if (isSandwichAttack(data) && data.attacks_detected > 0) {
+          addAlert(`${data.attacks_detected} potential attacks identified!`, 'critical');
+        }
+
+        if (isLiquidityManipulation(data) && data.manipulations_detected > 0) {
+          addAlert(`${data.manipulations_detected} manipulation events detected!`, 'warning');
+        }
+
+        if (isInsiderTrade(data) && data.suspicious_trades_count > 0) {
+          addAlert(`${data.suspicious_trades_count} suspicious trades detected`, 'warning');
+        }
+
+      const currentResults = results;
+      if (currentResults && isThreatAssessment(currentResults) && currentResults.overall_risk_score >= 75) {
+        addAlert(`High threat level detected - ${results.overall_risk_level}`, 'critical');
       }
 
       // Add success alert when no issues are found
-      if (!data.attacks_detected && !data.manipulations_detected && 
-          (!('wash_trading' in data) || data.wash_trading.detected_count === 0)) {
+            if (responseData.risk_score >= 80) {
+              addAlert(`Critical Risk Detected - Score: ${responseData.risk_score}/100`, 'critical');
+            } else if (responseData.risk_score >= 60) {
+              addAlert(`High Risk Activity - Score: ${responseData.risk_score}/100`, 'warning');
+            }
+
+            if (responseData.wash_trading.detected_count > 0) {
+              addAlert(`${responseData.wash_trading.detected_count} wash trading instances found`, 'warning');
+            }
+          } else if (isSandwichAttack(responseData)) {
+            if (responseData.attacks_detected > 0) {
+              addAlert(`${responseData.attacks_detected} potential attacks identified!`, 'critical');
+            }
+          } else if (isLiquidityManipulation(responseData)) {
+            if (responseData.manipulations_detected > 0) {
+              addAlert(`${responseData.manipulations_detected} manipulation events detected!`, 'warning');
+            }
+          } else if (isInsiderTrade(responseData)) {
+            if (responseData.suspicious_trades_count > 0) {
+              addAlert(`${responseData.suspicious_trades_count} suspicious trades detected`, 'warning');
+            }
+          } else if (isThreatAssessment(responseData)) {
+            if (responseData.overall_risk_score >= 75) {
+              addAlert(`High threat level detected - ${responseData.overall_risk_level}`, 'critical');
+            }
+          } else {
+            addAlert('No significant threats detected', 'success');
+          }
+
+          break; // Success, exit retry loop
+
+        } catch (error) {
+          console.error(`Attempt ${4 - retries} failed:`, error);
+          retries--;
+
+          if (retries > 0) {
+            console.log(`Retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            delay *= 2; // Exponential backoff
+            continue;
+          }
+          throw error;
+        }
+      }
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'An unknown error occurred';
+      setError(errorMsg);
+      addAlert(errorMsg, 'critical');
+    } finally {
+      setLoading(false);
+    }
+  };
         addAlert('No significant threats detected', 'success');
       }
 
@@ -320,16 +581,21 @@ const ChainWatchDashboard = () => {
     });
   };
 
-  const handleSandwichAttack = () => {
-    analyzeData('sandwich-attack', {
+  const handleSandwichAttack = async () => {
+    try {
+      if (loading) return;
+
+      await analyzeData('sandwich-attack', {
       token_address: tokenAddress,
       chain,
       num_transactions: 100
     });
   };
 
-  const handleInsiderTrading = () => {
-    analyzeData('insider-trading', {
+  const handleInsiderTrading = async () => {
+    if (loading) return;
+
+    await analyzeData('insider-trading', {
       wallet_address: walletAddress,
       chain,
       min_suspicion_score: 30
@@ -414,9 +680,17 @@ const ChainWatchDashboard = () => {
               </div>
             </div>
             <div className="flex items-center space-x-2 text-sm">
-              <div className="px-4 py-2 bg-gradient-to-r from-green-500/20 to-green-500/10 text-green-400 rounded-full flex items-center space-x-2 shadow-lg shadow-green-500/10 backdrop-blur-sm">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span>API Online</span>
+              <div className={`px-4 py-2 rounded-full flex items-center space-x-2 shadow-lg backdrop-blur-sm ${
+                apiHealth === null ? 'bg-gray-500/20 text-gray-400' :
+                apiHealth ? 'bg-gradient-to-r from-green-500/20 to-green-500/10 text-green-400 shadow-green-500/10' :
+                'bg-gradient-to-r from-red-500/20 to-red-500/10 text-red-400 shadow-red-500/10'
+              }`}>
+                <div className={`w-2 h-2 rounded-full ${
+                  apiHealth === null ? 'bg-gray-400' :
+                  apiHealth ? 'bg-green-400 animate-pulse' :
+                  'bg-red-400'
+                }`}></div>
+                <span>{apiHealth === null ? 'Checking API...' : apiHealth ? 'API Online' : 'API Offline'}</span>
               </div>
             </div>
           </div>
@@ -537,7 +811,11 @@ const ChainWatchDashboard = () => {
               else if (activeTab === 'threat') handleThreatAssessment();
             }}
             disabled={loading}
-            className="group relative w-full bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 hover:from-purple-600 hover:via-pink-600 hover:to-purple-600 text-white font-semibold py-4 rounded-xl transition-all flex items-center justify-center space-x-3 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 disabled:opacity-50 hover:scale-[1.02] duration-300"
+            className={`group relative w-full font-semibold py-4 rounded-xl transition-all flex items-center justify-center space-x-3 shadow-lg disabled:opacity-50 hover:scale-[1.02] duration-300 ${
+              !apiHealth 
+                ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
+                : 'bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 hover:from-purple-600 hover:via-pink-600 hover:to-purple-600 text-white shadow-purple-500/20 hover:shadow-purple-500/30'
+            }`}
           >
             {loading ? (
               <>
@@ -1263,6 +1541,9 @@ const ChainWatchDashboard = () => {
         </div>
       </footer>
     </div>
+  );
+};
+
   );
 };
 
