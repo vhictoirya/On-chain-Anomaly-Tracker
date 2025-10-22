@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "framework": "fastapi",
   "builds": [
     {
       "src": "backend/app.py",
@@ -14,23 +15,17 @@
     {
       "src": "/api/v1/(.*)",
       "dest": "backend/app.py",
-      "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+      "methods": ["GET", "POST", "OPTIONS"],
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type, Accept, Origin",
         "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-        "Access-Control-Allow-Credentials": "false"
+        "Access-Control-Max-Age": "86400"
       }
     },
     {
       "src": "/(.*)",
-      "dest": "backend/app.py",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type, Accept, Origin",
-        "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-        "Access-Control-Allow-Credentials": "false"
-      }
+      "dest": "backend/app.py"
     }
   ],
   "env": {
