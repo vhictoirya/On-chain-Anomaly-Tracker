@@ -1,7 +1,19 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'standalone',
+  eslint: {
+    ignoreDuringBuilds: true
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/v1/:path*',
+        destination: 'https://chainwatch-6ggd7vuu0-vhictoiryas-projects.vercel.app/api/v1/:path*'
+      }
+    ]
+  }
+}
 
-export default nextConfig;
+module.exports = nextConfig

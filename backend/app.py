@@ -4,7 +4,7 @@ FastAPI backend for detecting on-chain transaction anomalies
 Save this as: app.py
 """
 
-from fastapi import FastAPI, HTTPException, Query, BackgroundTasks
+from fastapi import FastAPI, HTTPException, Query, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -17,11 +17,26 @@ import sys
 import json
 import numpy as np
 from dotenv import load_dotenv
+import logging
 
-# Add the parent directory to the Python path to import your modules
+# Add the current directory to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir)
+sys.path.insert(0, current_dir)
+
+# Load environment variables
+load_dotenv()
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Add file handler for persistent logging
+file_handler = logging.FileHandler('api.log')
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(file_handler)
 
 # Import your detection modules
 try:
@@ -34,25 +49,10 @@ try:
         PoolDominationDetector
     )
     from threat_detector import fetch_risk_data, build_engine_from_webacy
-    print("✅ All detection modules imported successfully")
+    logger.info("All detection modules imported successfully")
 except ImportError as e:
-    print(f"⚠️ Warning: Could not import some modules: {e}")
-    print("Some endpoints may not work properly")
-
-load_dotenv()
-
-# Configure logging
-import logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-# Add file handler for persistent logging
-file_handler = logging.FileHandler('api.log')
-file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-logger.addHandler(file_handler)
+    logger.error(f"⚠️ Warning: Could not import some modules: {e}")
+    logger.warning("Some endpoints may not work properly")
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -62,14 +62,6 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
-
-# Add exception handler
-from fastapi.responses import JSONResponse
-from fastapi import Request
-
-# Add exception handler
-from fastapi.responses import JSONResponse
-from fastapi import Request
 
 # Custom JSON encoder to handle NumPy types
 class NumpyEncoder(json.JSONEncoder):
@@ -127,12 +119,12 @@ async def global_exception_handler(request: Request, exc: Exception):
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=["*"],  # Allow all origins for development
+    allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Accept", "Origin"],
 )
-logger.info("CORS middleware configured with allow_origins=['*']")
+logger.info("CORS middleware configured with allow_origins=['http://localhost:3000']")
 
 # Configuration
 MORALIS_API_KEY = os.getenv("MORALIS_KEY")

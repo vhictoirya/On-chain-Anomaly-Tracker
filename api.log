@@ -1,0 +1,6 @@
+2025-10-22 03:27:49,005 - backend.app - WARNING - Some endpoints may not work properly
+2025-10-22 03:27:49,006 - backend.app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000']
+2025-10-22 03:28:45,804 - backend.app - WARNING - Some endpoints may not work properly
+2025-10-22 03:28:45,805 - backend.app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000']
+2025-10-22 03:29:46,511 - backend.app - INFO - All detection modules imported successfully
+2025-10-22 03:29:46,512 - backend.app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000']

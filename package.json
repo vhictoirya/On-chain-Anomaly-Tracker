@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "vercel-build": "bash ./vercel-build.sh"
-  },
-  "engines": {
-    "node": ">=18"
+    "start": "uvicorn app:app --reload --port 8001"
   }
 }

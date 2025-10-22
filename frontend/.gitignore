@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 .env
 *.env
 Uniswap_V3/
@@ -101,4 +102,60 @@ var/
 
 # Vercel
 >>>>>>> c1384652b33a9de8ba2a056a1b9dab8f78165b31
+=======
+.env
+*.env
+Uniswap_V3/
+anomaly/
+
+# Dependencies
+/frontend/node_modules
+/frontend/.pnp
+/frontend/.pnp.js
+node_modules
+node_modules/@next/swc-win32-x64-msvc/next-swc.win32-x64-msvc.node
+
+# Testing
+/frontend/coverage
+
+# Production
+/frontend/build
+
+# Misc
+.DS_Store
+*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# VS Code
+.vscode/
+
+# Vercel
+>>>>>>> febb8de0ea9d8137a8b75f977899d0f14ddd6c10
 .vercel

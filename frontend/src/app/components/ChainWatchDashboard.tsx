@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { checkAPIHealth } from '../utils/api';
+import { Shield, AlertTriangle, Activity, Layers, Search, TrendingUp, Users, Droplet, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import AlertBanner from './AlertBanner';
+import { checkAPIHealth } from '../../utils/api';
 
 // Type Guards
-// Used to determine the type of results from API responses
 const isTransactionAnomaly = (results: unknown): results is TransactionAnomalyResults => {
   return typeof results === 'object' && results !== null && 'wash_trading' in results && 'price_manipulation' in results && 'pump_and_dump' in results;
 };
@@ -181,7 +182,6 @@ interface PoolDominationResponse extends BaseResponse {
   }>;
 }
 
-
 interface ThreatAssessmentResponse extends BaseResponse {
   address: string;
   token_name: string;
@@ -202,13 +202,9 @@ interface ThreatAssessmentResponse extends BaseResponse {
     score: number;
   }>;
 }
-import { Shield, AlertTriangle, Activity, Layers, Search, TrendingUp, Users, Droplet, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import AlertBanner from './AlertBanner';
 
-// Your complete React component code here
-interface Props {}
-
-const ChainWatchDashboard: React.FC<Props> = () => {
+// Component definition
+const ChainWatchDashboard = () => {
   // State declarations
   const [activeTab, setActiveTab] = useState('transaction');
   const [alerts, setAlerts] = useState<Array<{
@@ -246,78 +242,21 @@ const ChainWatchDashboard: React.FC<Props> = () => {
     }, ...prev]);
   };
 
-  return (
-  // Form states
-  const [tokenAddress, setTokenAddress] = useState('0x6982508145454ce325ddbe47a25d4ec3d2311933');
-  const [walletAddress, setWalletAddress] = useState('0xcB1C1FdE09f811B294172696404e88E658659905');
-  const [pairAddress, setPairAddress] = useState('0xa43fe16908251ee70ef74718545e4fe6c5ccec9f');
-  const [chain, setChain] = useState('eth');
-  const [sensitivity, setSensitivity] = useState('medium');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [results, setResults] = useState<
-    | SandwichAttackResponse
-    | InsiderTradeResponse
-    | SnipingBotResponse
-    | LiquidityManipulationResponse
-    | ConcentratedAttackResponse
-    | PoolDominationResponse
-    | ThreatAssessmentResponse
-    | TransactionAnomalyResults
-    | null
-  >(null);
+  // API Base URL
+  const API_BASE = `${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8001'}/api/v1`;
 
-  const [alerts, setAlerts] = useState<Array<{
-    id: string;
-    message: string;
-    type: 'critical' | 'warning' | 'info' | 'success';
-    timestamp: Date;
-  }>>([]);
-
-  const [apiHealth, setApiHealth] = useState<boolean | null>(null);
-
+  // API health check effect
   useEffect(() => {
-    async function checkHealth() {
+    const checkHealth = async () => {
       const isHealthy = await checkAPIHealth();
       setApiHealth(isHealthy);
       if (!isHealthy) {
         addAlert('API is not responding. Please try again later.', 'critical');
       }
-    }
-    checkHealth();
+    };
+    
+    void checkHealth();
   }, []);
-
-  const addAlert = (message: string, type: 'critical' | 'warning' | 'info' | 'success') => {
-    setAlerts(prev => [{
-      id: Math.random().toString(36).substring(7),
-      message,
-      type,
-      timestamp: new Date()
-    }, ...prev]);
-  };
-  const [activeTab, setActiveTab] = useState('transaction');
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<
-    | SandwichAttackResponse
-    | InsiderTradeResponse
-    | SnipingBotResponse
-    | LiquidityManipulationResponse
-    | ConcentratedAttackResponse
-    | PoolDominationResponse
-    | ThreatAssessmentResponse
-    | TransactionAnomalyResults
-    | null
-  >(null);
-  const [error, setError] = useState<string | null>(null);
-
-  // Form states
-  const [tokenAddress, setTokenAddress] = useState('0x6982508145454ce325ddbe47a25d4ec3d2311933');
-  const [walletAddress, setWalletAddress] = useState('0xcB1C1FdE09f811B294172696404e88E658659905');
-  const [pairAddress, setPairAddress] = useState('0xa43fe16908251ee70ef74718545e4fe6c5ccec9f');
-  const [chain, setChain] = useState('eth');
-  const [sensitivity, setSensitivity] = useState('medium');
-
-  const API_BASE = `${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8001'}/api/v1`;
 
   // Fix URL encoding for special characters
   const encodeParams = (params: Record<string, string | number>) => {
@@ -327,34 +266,6 @@ const ChainWatchDashboard: React.FC<Props> = () => {
   };
 
   const analyzeData = async (endpoint: string, params: Record<string, string | number>) => {
-    setLoading(true);
-    setError(null);
-    setResults(null);
-
-    let retries = 3;
-    let delay = 1000; // Start with 1s delay
-
-    while (retries > 0) {
-      try {
-        const queryString = encodeParams(params);
-        const url = `${API_BASE}/${endpoint}?${queryString}`;
-        console.log(`Fetching from: ${url}`);
-
-        const response = await fetch(url, {
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error(`API Error ${response.status}: ${response.statusText}`);
-        }
-
-        const responseData = await response.json();
-        setResults(responseData);
-
-        // Type guard checks for results before using properties
-        const analyzeData = async (endpoint: string, params: Record<string, string | number>) => {
     setLoading(true);
     setError(null);
     setResults(null);
@@ -376,137 +287,18 @@ const ChainWatchDashboard: React.FC<Props> = () => {
           });
           
           if (!response.ok) {
-            throw new Error(`API Error ${response.status}: ${response.statusText}`);
+            console.error(`API request failed: ${response.status} ${response.statusText}`);
+            console.error('Response headers:', Object.fromEntries(response.headers.entries()));
+            const errorText = await response.text();
+            console.error('Response body:', errorText);
+            throw new Error(`API Error ${response.status}: ${response.statusText}${errorText ? ` - ${errorText}` : ''}`);
           }
 
           const responseData = await response.json();
           setResults(responseData);
-
-          // Generate appropriate alerts based on response type
+          
+          // Generate alerts based on response type
           if (isTransactionAnomaly(responseData)) {
-      try {
-      try {
-        const queryString = encodeParams(params);
-        const url = `${API_BASE}/${endpoint}?${queryString}`;
-        console.log(`Fetching from: ${url}`);
-
-        const response = await fetch(url, {
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-        
-        const data = await response.json();
-        setResults(data);
-        
-        if (!response.ok) {
-          console.error(`API request failed: ${response.status} ${response.statusText}`);
-          console.error('Response headers:', Object.fromEntries(response.headers.entries()));
-          const errorText = await response.text();
-          console.error('Response body:', errorText);
-          throw new Error(`API Error ${response.status}: ${response.statusText}${errorText ? ` - ${errorText}` : ''}`);
-        }
-
-        const responseData = await response.json();
-        setResults(responseData);
-        
-        // Generate alerts based on analysis results
-        if ('risk_score' in responseData && responseData.risk_score >= 80) {
-          addAlert(`Critical Risk Detected - Score: ${responseData.risk_score}/100`, 'critical');
-        } else if ('risk_score' in responseData && responseData.risk_score >= 60) {
-          addAlert(`High Risk Activity - Score: ${responseData.risk_score}/100`, 'warning');
-        }
-
-        if ('attacks_detected' in responseData && responseData.attacks_detected > 0) {
-          addAlert(`${responseData.attacks_detected} potential attacks identified!`, 'critical');
-        }
-
-        if ('manipulations_detected' in responseData && responseData.manipulations_detected > 0) {
-          addAlert(`${responseData.manipulations_detected} manipulation events detected!`, 'warning');
-        }
-
-        if ('wash_trading' in responseData && responseData.wash_trading.detected_count > 0) {
-          addAlert(`${responseData.wash_trading.detected_count} wash trading instances found`, 'warning');
-        }
-
-        if ('suspicious_trades_count' in responseData && responseData.suspicious_trades_count > 0) {
-          addAlert(`${responseData.suspicious_trades_count} suspicious trades detected`, 'warning');
-        }
-
-        if ('overall_risk_score' in responseData && responseData.overall_risk_score >= 75) {
-          addAlert(`High threat level detected - ${responseData.overall_risk_level}`, 'critical');
-        }
-
-        // Add success alert when no issues are found
-        if (!responseData.attacks_detected && !responseData.manipulations_detected && 
-            (!('wash_trading' in responseData) || responseData.wash_trading.detected_count === 0)) {
-          addAlert('No significant threats detected', 'success');
-        }
-
-        return; // Exit retry loop on success
-
-      } catch (err) {
-        console.error(`Attempt ${4 - retries} failed:`, err);
-        retries--;
-
-        if (retries > 0) {
-          console.log(`Retrying in ${delay}ms...`);
-          await new Promise(resolve => setTimeout(resolve, delay));
-          delay *= 2; // Exponential backoff
-          continue;
-        }
-        throw err; // Throw the last error if all retries failed
-      }
-
-      try {
-        const queryString = encodeParams(params);
-        const url = `${API_BASE}/${endpoint}?${queryString}`;
-        console.log(`Fetching from: ${url}`);
-
-        const response = await fetch(url, {
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error(`API Error ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        setResults(data);
-
-        // Type guard checks for results before using properties
-        if (isTransactionAnomaly(data)) {
-          if (data.risk_score >= 80) {
-            addAlert(`Critical Risk Detected - Score: ${data.risk_score}/100`, 'critical');
-          } else if (data.risk_score >= 60) {
-            addAlert(`High Risk Activity - Score: ${data.risk_score}/100`, 'warning');
-          }
-
-          if (data.wash_trading.detected_count > 0) {
-            addAlert(`${data.wash_trading.detected_count} wash trading instances found`, 'warning');
-          }
-        }
-
-        if (isSandwichAttack(data) && data.attacks_detected > 0) {
-          addAlert(`${data.attacks_detected} potential attacks identified!`, 'critical');
-        }
-
-        if (isLiquidityManipulation(data) && data.manipulations_detected > 0) {
-          addAlert(`${data.manipulations_detected} manipulation events detected!`, 'warning');
-        }
-
-        if (isInsiderTrade(data) && data.suspicious_trades_count > 0) {
-          addAlert(`${data.suspicious_trades_count} suspicious trades detected`, 'warning');
-        }
-
-      const currentResults = results;
-      if (currentResults && isThreatAssessment(currentResults) && currentResults.overall_risk_score >= 75) {
-        addAlert(`High threat level detected - ${results.overall_risk_level}`, 'critical');
-      }
-
-      // Add success alert when no issues are found
             if (responseData.risk_score >= 80) {
               addAlert(`Critical Risk Detected - Score: ${responseData.risk_score}/100`, 'critical');
             } else if (responseData.risk_score >= 60) {
@@ -536,10 +328,10 @@ const ChainWatchDashboard: React.FC<Props> = () => {
             addAlert('No significant threats detected', 'success');
           }
 
-          break; // Success, exit retry loop
+          return; // Exit retry loop on success
 
-        } catch (error) {
-          console.error(`Attempt ${4 - retries} failed:`, error);
+        } catch (err) {
+          console.error(`Attempt ${4 - retries} failed:`, err);
           retries--;
 
           if (retries > 0) {
@@ -548,20 +340,11 @@ const ChainWatchDashboard: React.FC<Props> = () => {
             delay *= 2; // Exponential backoff
             continue;
           }
-          throw error;
+          throw err; // Throw the last error if all retries failed
         }
       }
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'An unknown error occurred';
-      setError(errorMsg);
-      addAlert(errorMsg, 'critical');
-    } finally {
-      setLoading(false);
-    }
-  };
-        addAlert('No significant threats detected', 'success');
-      }
-
+      
+      throw new Error('Maximum retries exceeded');
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'An unknown error occurred';
       setError(errorMsg);
@@ -572,7 +355,8 @@ const ChainWatchDashboard: React.FC<Props> = () => {
   };
 
   const handleTransactionAnalysis = () => {
-    analyzeData('transaction-anomaly', {
+    if (loading) return;
+    void analyzeData('transaction-anomaly', {
       token_address: tokenAddress,
       chain,
       sensitivity,
@@ -581,21 +365,18 @@ const ChainWatchDashboard: React.FC<Props> = () => {
     });
   };
 
-  const handleSandwichAttack = async () => {
-    try {
-      if (loading) return;
-
-      await analyzeData('sandwich-attack', {
+  const handleSandwichAttack = () => {
+    if (loading) return;
+    void analyzeData('sandwich-attack', {
       token_address: tokenAddress,
       chain,
       num_transactions: 100
     });
   };
 
-  const handleInsiderTrading = async () => {
+  const handleInsiderTrading = () => {
     if (loading) return;
-
-    await analyzeData('insider-trading', {
+    void analyzeData('insider-trading', {
       wallet_address: walletAddress,
       chain,
       min_suspicion_score: 30
@@ -603,14 +384,16 @@ const ChainWatchDashboard: React.FC<Props> = () => {
   };
 
   const handleSnipingBot = () => {
-    analyzeData('sniping-bot', {
+    if (loading) return;
+    void analyzeData('sniping-bot', {
       wallet_address: walletAddress,
       chain
     });
   };
 
   const handleLiquidityManipulation = () => {
-    analyzeData('liquidity-manipulation', {
+    if (loading) return;
+    void analyzeData('liquidity-manipulation', {
       pair_address: pairAddress,
       chain,
       num_transactions: 100
@@ -618,7 +401,8 @@ const ChainWatchDashboard: React.FC<Props> = () => {
   };
 
   const handleConcentratedAttack = () => {
-    analyzeData('concentrated-attack', {
+    if (loading) return;
+    void analyzeData('concentrated-attack', {
       pair_address: pairAddress,
       chain,
       num_transactions: 100
@@ -626,7 +410,8 @@ const ChainWatchDashboard: React.FC<Props> = () => {
   };
 
   const handlePoolDomination = () => {
-    analyzeData('pool-domination', {
+    if (loading) return;
+    void analyzeData('pool-domination', {
       pair_address: pairAddress,
       chain,
       num_transactions: 100
@@ -634,7 +419,8 @@ const ChainWatchDashboard: React.FC<Props> = () => {
   };
 
   const handleThreatAssessment = () => {
-    analyzeData('threat-assessment', {
+    if (loading) return;
+    void analyzeData('threat-assessment', {
       address: tokenAddress
     });
   };
@@ -1541,9 +1327,6 @@ const ChainWatchDashboard: React.FC<Props> = () => {
         </div>
       </footer>
     </div>
-  );
-};
-
   );
 };
 
