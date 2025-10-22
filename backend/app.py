@@ -124,7 +124,7 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Accept", "Origin"],
 )
-logger.info("CORS middleware configured with allow_origins=['http://localhost:3000']")
+logger.info("CORS middleware configured with allow_origins=['http://localhost:3000', 'http://127.0.0.1:3000']")
 
 # Configuration
 MORALIS_API_KEY = os.getenv("MORALIS_KEY")

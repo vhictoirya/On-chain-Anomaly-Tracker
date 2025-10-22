@@ -9,3 +9,25 @@
 2025-10-22 03:27:32,752 - app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000']
 2025-10-22 03:29:45,324 - app - INFO - All detection modules imported successfully
 2025-10-22 03:29:45,325 - app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000']
+2025-10-22 07:35:32,183 - app - INFO - All detection modules imported successfully
+2025-10-22 07:35:32,186 - app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000']
+2025-10-22 07:38:54,391 - app - INFO - All detection modules imported successfully
+2025-10-22 07:38:54,392 - app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000']
+2025-10-22 07:40:31,819 - app - INFO - All detection modules imported successfully
+2025-10-22 07:40:31,820 - app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000']
+2025-10-22 07:40:56,417 - app - INFO - All detection modules imported successfully
+2025-10-22 07:40:56,418 - app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000']
+2025-10-22 07:41:44,694 - app - INFO - All detection modules imported successfully
+2025-10-22 07:41:44,695 - app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000']
+2025-10-22 08:38:14,736 - app - INFO - All detection modules imported successfully
+2025-10-22 08:38:14,737 - app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000']
+2025-10-22 08:38:22,887 - app - INFO - All detection modules imported successfully
+2025-10-22 08:38:22,888 - app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000']
+2025-10-22 08:38:33,433 - app - INFO - All detection modules imported successfully
+2025-10-22 08:38:33,434 - app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000']
+2025-10-22 08:39:38,163 - app - INFO - All detection modules imported successfully
+2025-10-22 08:39:38,163 - app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-22 08:40:22,768 - app - INFO - All detection modules imported successfully
+2025-10-22 08:40:22,768 - app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-22 08:57:53,168 - app - INFO - All detection modules imported successfully
+2025-10-22 08:57:53,169 - app - INFO - CORS middleware configured with allow_origins=['http://localhost:3000', 'http://127.0.0.1:3000']
