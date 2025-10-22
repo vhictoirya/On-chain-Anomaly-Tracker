@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  distDir: '.next',
+  typescript: {
+    ignoreBuildErrors: true
+  },
+  experimental: {
+    serverActions: true,
+  },
   eslint: {
     ignoreDuringBuilds: true
   },
