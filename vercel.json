@@ -3,10 +3,11 @@
   "framework": "fastapi",
   "builds": [
     {
-      "src": "backend/app.py",
+      "src": "./backend/app.py",
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "15mb",
+        "pythonVersion": "3.11",
         "runtime": "python3.11"
       }
     }
@@ -14,7 +15,7 @@
   "routes": [
     {
       "src": "/api/v1/(.*)",
-      "dest": "backend/app.py",
+      "dest": "./backend/app.py",
       "methods": ["GET", "POST", "OPTIONS"],
       "headers": {
         "Access-Control-Allow-Origin": "*",
@@ -25,10 +26,11 @@
     },
     {
       "src": "/(.*)",
-      "dest": "backend/app.py"
+      "dest": "./backend/app.py"
     }
   ],
   "env": {
-    "PYTHON_VERSION": "3.11"
+    "PYTHON_VERSION": "3.11",
+    "PYTHONPATH": "./backend"
   }
 }
