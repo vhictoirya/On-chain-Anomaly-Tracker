@@ -7,7 +7,8 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-ENV PORT=8001
-EXPOSE ${PORT}
+# Expose port (Railway will override with $PORT)
+EXPOSE 8001
 
-CMD uvicorn backend.app:app --host 0.0.0.0 --port ${PORT:-8001}
+# Start the FastAPI app
+CMD uvicorn app:app --host 0.0.0.0 --port ${PORT:-8001}
