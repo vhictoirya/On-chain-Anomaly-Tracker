@@ -1,35 +1,26 @@
 {
   "version": 2,
-  "buildCommand": "bash ./vercel-build.sh",
-  "framework": "fastapi",
   "builds": [
     {
-      "src": "./backend/app.py",
+      "src": "api/index.py",
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "15mb",
-        "buildCommand": "bash ./vercel-build.sh"
+        "runtime": "python3.11"
       }
     }
   ],
   "routes": [
     {
       "src": "/api/v1/(.*)",
-      "dest": "./backend/app.py",
-      "methods": ["GET", "POST", "OPTIONS"],
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type, Accept, Origin",
-        "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-        "Access-Control-Max-Age": "86400"
-      }
+      "dest": "api/index.py"
     },
     {
       "src": "/(.*)",
-      "dest": "./backend/app.py"
+      "dest": "api/index.py"
     }
   ],
   "env": {
-    "PYTHONPATH": "./backend"
+    "PYTHONPATH": "./api"
   }
 }
