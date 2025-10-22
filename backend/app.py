@@ -912,14 +912,15 @@ async def assess_token_threat(
 # Run the application
 if __name__ == "__main__":
     import uvicorn
+    port = int(os.getenv("PORT", 8001))  # Use Railway's PORT env var
     print("\n🚀 Starting ChainWatch Anomaly Detection API...")
-    print(f"📡 Server will be available at: http://0.0.0.0:8001")
-    print(f"📚 API Documentation: http://0.0.0.0:8001/docs")
-    print(f"📖 ReDoc Documentation: http://0.0.0.0:8001/redoc\n")
+    print(f"📡 Server will be available at: http://0.0.0.0:{port}")
+    print(f"📚 API Documentation: http://0.0.0.0:{port}/docs")
+    print(f"📖 ReDoc Documentation: http://0.0.0.0:{port}/redoc\n")
     
     uvicorn.run(
-        app,  # Pass the app object directly instead of string
+        app,
         host="0.0.0.0",
-        port=8001,
-        reload=False  # Set to False when running directly
+        port=port,  # Use the port from environment variable
+        reload=False
     )
