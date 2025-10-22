@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChainWatch API Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(to right, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .status-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .dot.loading {
+            background: #eab308;
+        }
+        
+        .dot.success {
+            background: #22c55e;
+        }
+        
+        .dot.error {
+            background: #ef4444;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        button {
+            background: linear-gradient(to right, #a855f7, #ec4899);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .endpoint-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .endpoint-list li {
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ ChainWatch API Test</h1>
+        
+        <div class="status-card">
+            <div class="status-indicator">
+                <div class="dot loading" id="statusDot"></div>
+                <strong id="statusText">Checking API Status...</strong>
+            </div>
+            <p id="statusMessage">Connecting to backend...</p>
+            <button onclick="checkHealth()" id="refreshBtn">Refresh Status</button>
+        </div>
+        
+        <div class="status-card">
+            <h2>📡 Available Endpoints</h2>
+            <ul class="endpoint-list">
+                <li>GET /api/v1/transaction-anomaly</li>
+                <li>GET /api/v1/sandwich-attack</li>
+                <li>GET /api/v1/insider-trading</li>
+                <li>GET /api/v1/sniping-bot</li>
+                <li>GET /api/v1/liquidity-manipulation</li>
+                <li>GET /api/v1/concentrated-attack</li>
+                <li>GET /api/v1/pool-domination</li>
+                <li>GET /api/v1/threat-assessment</li>
+            </ul>
+        </div>
+        
+        <div class="status-card">
+            <h2>🧪 Test API Call</h2>
+            <p style="margin-bottom: 10px;">Test the threat assessment endpoint:</p>
+            <button onclick="testAPI()" id="testBtn">Test Threat Assessment</button>
+            <div id="testResult" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://on-chain-anomaly-tracker-production.up.railway.app';
+        
+        async function checkHealth() {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const statusMessage = document.getElementById('statusMessage');
+            const refreshBtn = document.getElementById('refreshBtn');
+            
+            statusDot.className = 'dot loading';
+            statusText.textContent = 'Checking API Status...';
+            statusMessage.textContent = 'Connecting to backend...';
+            refreshBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                if (data.status === 'healthy' || data.status === 'starting') {
+                    statusDot.className = 'dot success';
+                    statusText.textContent = '✅ API is Online';
+                    statusMessage.innerHTML = `
+                        <strong>Status:</strong> ${data.status}<br>
+                        <strong>Moralis:</strong> ${data.api_keys?.moralis || 'N/A'}<br>
+                        <strong>Webacy:</strong> ${data.api_keys?.webacy || 'N/A'}<br>
+                        <strong>Timestamp:</strong> ${new Date(data.timestamp).toLocaleString()}
+                    `;
+                } else {
+                    throw new Error('API unhealthy');
+                }
+            } catch (error) {
+                statusDot.className = 'dot error';
+                statusText.textContent = '❌ API is Offline';
+                statusMessage.textContent = `Error: ${error.message}`;
+            } finally {
+                refreshBtn.disabled = false;
+            }
+        }
+        
+        async function testAPI() {
+            const testBtn = document.getElementById('testBtn');
+            const testResult = document.getElementById('testResult');
+            
+            testBtn.disabled = true;
+            testResult.innerHTML = '<p>🔄 Testing API call...</p>';
+            
+            try {
+                // Test with USDT address
+                const address = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+                const response = await fetch(`${API_BASE}/api/v1/threat-assessment?address=${address}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                testResult.innerHTML = `
+                    <p style="color: #22c55e; margin-bottom: 10px;">✅ API call successful!</p>
+                    <strong>Token:</strong> ${data.token_name} (${data.token_symbol})<br>
+                    <strong>Risk Level:</strong> ${data.overall_risk_level}<br>
+                    <strong>Risk Score:</strong> ${data.overall_risk_score?.toFixed(1)}<br>
+                    <details style="margin-top: 10px;">
+                        <summary style="cursor: pointer; color: #c084fc;">View Full Response</summary>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </details>
+                `;
+            } catch (error) {
+                testResult.innerHTML = `
+                    <p style="color: #ef4444;">❌ API call failed</p>
+                    <p>${error.message}</p>
+                `;
+            } finally {
+                testBtn.disabled = false;
+            }
+        }
+        
+        // Check health on load
+        checkHealth();
+    </script>
+</body>
+</html>
