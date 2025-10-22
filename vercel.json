@@ -3,11 +3,7 @@
   "builds": [
     {
       "src": "api/index.py",
-      "use": "@vercel/python",
-      "config": {
-        "runtime": "python3.11",
-        "baseDir": "api"
-      }
+      "use": "@vercel/python@3.1.0"
     }
   ],
   "routes": [
